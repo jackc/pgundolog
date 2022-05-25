@@ -48,6 +48,9 @@ declare
 	column_names text;
 	key_column_names text;
 begin
+	-- Disable triggers and foreign key constraints.
+	set session_replication_role = 'replica';
+
 	for c in select * from pgundolog.changes order by id desc
 	loop
 		select string_agg(a.attname, ', '), string_agg(a.attname, ', ') filter (where i.indisprimary)
@@ -88,5 +91,8 @@ begin
 	end loop;
 
 	delete from pgundolog.changes;
+
+	-- Enable triggers and foreign key constraints.
+	set session_replication_role = 'origin';
 end
 $$;
