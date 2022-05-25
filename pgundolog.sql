@@ -72,14 +72,14 @@ begin
 			execute format(
 				'update %1$I.%2$I t ' ||
 				'set (%3$s) = (select * from jsonb_populate_record(null::%1$I.%2$I, $1)) ' ||
-				'where (%4$s) = (select (%4$s) from jsonb_populate_record(null::%1$I.%2$I, $2))',
+				'where (%4$s) = (select %4$s from jsonb_populate_record(null::%1$I.%2$I, $2))',
 				c.tg_table_schema, c.tg_table_name, column_names, key_column_names
 			) using c.old, c.new;
 		elsif c.tg_op = 'INSERT' then
 			execute format(
 				'delete from %1$I.%2$I t ' ||
-				'where (%4$s) = (select (%4$s) from jsonb_populate_record(null::%1$I.%2$I, $2))',
-				c.tg_table_schema, c.tg_table_name
+				'where (%3$s) = (select %3$s from jsonb_populate_record(null::%1$I.%2$I, $1))',
+				c.tg_table_schema, c.tg_table_name, key_column_names
 			) using c.new;
 		else
 			raise 'unknown tg_op %', c.tg_op;
