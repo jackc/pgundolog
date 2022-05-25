@@ -66,13 +66,13 @@ begin
 
 		if c.tg_op = 'DELETE' then
 			execute format(
-				'insert into %1$I.%2$I select * from jsonb_populate_record(null::%1$I.%2$I, $1)',
-				c.tg_table_schema, c.tg_table_name
+				'insert into %1$I.%2$I (%3$s) select %3$s from jsonb_populate_record(null::%1$I.%2$I, $1)',
+				c.tg_table_schema, c.tg_table_name, column_names
 			) using c.old;
 		elsif c.tg_op = 'UPDATE' then
 			execute format(
 				'update %1$I.%2$I t ' ||
-				'set (%3$s) = (select * from jsonb_populate_record(null::%1$I.%2$I, $1)) ' ||
+				'set (%3$s) = (select %3$s from jsonb_populate_record(null::%1$I.%2$I, $1)) ' ||
 				'where (%4$s) = (select %4$s from jsonb_populate_record(null::%1$I.%2$I, $2))',
 				c.tg_table_schema, c.tg_table_name, column_names, key_column_names
 			) using c.old, c.new;
