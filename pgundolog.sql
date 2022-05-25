@@ -56,6 +56,7 @@ begin
 		where a.attrelid = format('%I.%I', c.tg_table_schema, c.tg_table_name)::regclass
 			and a.attnum > 0
 			and not a.attisdropped
+			and a.attgenerated = ''
 		into strict column_names, key_column_names;
 
 		-- Use entire row if no primary key exists.
