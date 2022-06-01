@@ -10,6 +10,7 @@ create table pgundolog.changes (
 );
 
 create function pgundolog.record_changes() returns trigger
+security definer
 language plpgsql as $$
 begin
 	insert into pgundolog.changes (tg_table_schema, tg_table_name, tg_op, old, new)
